@@ -226,8 +226,8 @@ $$ |  $$ |$$$$$$$  |  \$$$$  |$$ |     \$$$$$$$ |\$$$$$$$\ \$$$$$$$ |
 """)
 
 print("""
-+=========================================================================+
-|  Tile #   Time Elapsed   Flags1    Flags2    Flags3   Tile ID   Wall ID |
++=================================================================================+
+|  Tiles Purified   Time Elapsed   Flags1    Flags2    Flags3   Tile ID   Wall ID |
 """, end="")
 
 # wall IDs are here just in case
@@ -240,7 +240,7 @@ crimsonedTileIDs = {"199": 2, "200": 161, "203": 1, "234": 53, "352": 69, "399":
 hallowedTileIDs = {"109": 2, "116": 53, "117": 1, "164": 161, "402": 397, "403": 396}
 #hallowedWallIDs = {"28": 1, "70": 63, "200": 1, "201": 1, "202": 1, "203": 1, "219": 216, "222": 187}
 
-tiles_read = 0
+tiles_purified = 0
 purifyHallow = args.purifyHallow
 now = time.time()
 
@@ -267,12 +267,14 @@ while file.tell() < section_pointers[2]:
 					# corruption
 					file.seek(-2, 1)
 					file.write(struct.pack('<H', corruptedTileIDs[str(tileID)]))
+					tiles_purified += 1
 			except KeyError:
 				try:
 					if crimsonedTileIDs[str(tileID)]:
 						# crimson
 						file.seek(-2, 1)
 						file.write(struct.pack('<H', crimsonedTileIDs[str(tileID)]))
+						tiles_purified += 1
 				except KeyError:
 					if purifyHallow:
 						try:
@@ -280,6 +282,7 @@ while file.tell() < section_pointers[2]:
 								# hallow
 								file.seek(-2, 1)
 								file.write(struct.pack('<H', hallowedTileIDs[str(tileID)]))
+								tiles_purified += 1
 						except KeyError:
 							# tile's clean
 							pass
@@ -294,12 +297,14 @@ while file.tell() < section_pointers[2]:
 					# corruption
 					file.seek(-1, 1)
 					file.write(struct.pack('B', corruptedTileIDs[str(tileID)]))
+					tiles_purified += 1
 			except KeyError:
 				try:
 					if crimsonedTileIDs[str(tileID)]:
 						# crimson
 						file.seek(-1, 1)
 						file.write(struct.pack('B', crimsonedTileIDs[str(tileID)]))
+						tiles_purified += 1
 				except KeyError:
 					if purifyHallow:
 						try:
@@ -307,6 +312,7 @@ while file.tell() < section_pointers[2]:
 								# hallow
 								file.seek(-1, 1)
 								file.write(struct.pack('B', hallowedTileIDs[str(tileID)]))
+								tiles_purified += 1
 						except KeyError:
 							# tile's clean
 							pass
@@ -324,9 +330,9 @@ while file.tell() < section_pointers[2]:
 	minutes = floor(elapsed/60)
 	seconds = floor(elapsed - (3600*hours) - (60*minutes))
 	elapsed = '{0}:{1}:{2}'.format(format(hours,'02d'), format(minutes,'02d'), format(seconds,'02d'))
-	print("| {0}    {1}    {2}  {3}  {4}    {5}       {6}   |\r".format(
-		  format(tiles_read, '08d'), elapsed, format(flags1, '08b'), format(flags2, '08b'),
-	  	  format(flags3, '08b'), format(tileID, '03d'), format(wallID, '03d')),
+	print("|    {0}       {1}    {2}  {3}  {4}    {5}       {6}   |\r".format(
+		  '{0}{1},{2}{3}{4},{5}{6}{7}'.format(*format(tiles_purified,'08d')), elapsed, format(flags1, '08b'), 
+		  format(flags2, '08b'), format(flags3, '08b'), format(tileID, '03d'), format(wallID, '03d')),
 	  	  end="")
 
 	# tileframeimportant
@@ -357,8 +363,6 @@ while file.tell() < section_pointers[2]:
 		file.read(1)
 	else:
 		pass
-
-	tiles_read += 1
 
 # this code might as well be changing the extension to wld
 file.close()
