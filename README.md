@@ -1,8 +1,8 @@
-# Astraea
+# TPurify
 A command-line tool written in Python that removes all corruption, crimson, and (optionally) hallow from Terraria worlds.
 
 # Command Syntax
-`python "astraea.py" "C:/path/to/world/file/world_name.wld"`
+`python "tpurify.py" "C:/path/to/world/file/world_name.wld"`
 
 ## Arguments
 |     Argument    |                   Description                   |
